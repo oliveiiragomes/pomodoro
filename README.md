@@ -1,28 +1,41 @@
 # Pomodoro
 
-Aplicativo desktop para organizar períodos de foco e descanso usando a técnica Pomodoro. A tela mostra o tempo restante, o progresso do ciclo e a quantidade de focos concluídos.
+**Trabalhe com foco. Faça pausas no ritmo certo.**
 
-## Instalação e execução
+Um timer desktop baseado na técnica Pomodoro, com contagem regressiva, progresso do ciclo e acompanhamento dos focos concluídos.
+
+`Python` · `Tkinter` · `pygame-ce`
+
+## O ciclo
+
+| Etapa | Duração padrão |
+| --- | ---: |
+| Foco | 25 min |
+| Pausa curta | 5 min |
+| Pausa longa | 15 min a cada 4 focos |
+
+## Recursos
+
+- Inicie, pause, reinicie ou pule a etapa atual.
+- Ative o início automático de focos e pausas de forma independente.
+- Ajuste as durações de 1 a 180 minutos e o intervalo da pausa longa de 2 a 12 focos.
+- Escolha entre os temas Claro, Neon escuro, Retro e Verde Floresta.
+- Selecione um alarme MP3 da pasta `audios`, ouça uma prévia e ajuste o volume durante a reprodução.
+- Use o modo mini para manter o cronômetro em uma janela compacta.
+
+As configurações permanecem ativas durante a sessão e voltam aos valores padrão quando o aplicativo é reiniciado.
+
+## Comece
+
+Requer Python com Tkinter disponível.
 
 ```bash
 python -m pip install -r requirements.txt
 python main.py
 ```
 
-## Ciclo padrão
+## Testes
 
-- Foco: 25 minutos.
-- Pausa curta: 5 minutos.
-- Pausa longa: 15 minutos a cada 4 focos.
-
-As durações podem ser ajustadas entre 1 e 180 minutos, e o intervalo da pausa longa entre 2 e 12 focos.
-
-## Recursos
-
-- Iniciar, pausar, reiniciar ou pular um ciclo.
-- Iniciar focos e pausas automaticamente, com opções independentes.
-- Escolher entre os temas Claro, Neon escuro, Retro e Verde Floresta.
-- Reproduzir um alarme MP3 da pasta `audios` e ajustar seu volume durante a reprodução.
-- Usar o modo mini para manter o cronômetro em uma janela compacta.
-
-As configurações ficam ativas durante a sessão e voltam aos valores padrão quando o aplicativo é reiniciado.
+```bash
+python -m unittest -v
+```

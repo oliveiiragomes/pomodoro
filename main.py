@@ -559,6 +559,53 @@ class PomodoroApp:
         janela_configuracoes.transient(self.janela)
         janela_configuracoes.grab_set()
 
+        campo_fundo = self.CORES["surface"]
+        campo_texto = self.CORES["text"]
+        if self.tema in {"Neon escuro", "Retro", "Verde Floresta"}:
+            campo_fundo = "#F4F4F4"
+            campo_texto = "#111111"
+        cor_fundo_acao = self.CORES["surface_alt"]
+        cor_texto_acao = self.CORES["text"]
+        cor_ativa_acao = self.CORES["border"]
+        if self.tema in {"Neon escuro", "Retro", "Verde Floresta"}:
+            cor_fundo_acao = campo_fundo
+            cor_texto_acao = campo_texto
+            cor_ativa_acao = "#DEDEDE"
+
+        estilo = ttk.Style(janela_configuracoes)
+        estilo.configure(
+            "Pomodoro.TCombobox",
+            fieldbackground=campo_fundo,
+            background=campo_fundo,
+            foreground=campo_texto,
+            font=self._fonte(10),
+            padding=6,
+        )
+        estilo.map(
+            "Pomodoro.TCombobox",
+            fieldbackground=[("readonly", campo_fundo)],
+            foreground=[("readonly", campo_texto)],
+        )
+        estilo.configure(
+            "Pomodoro.TSpinbox",
+            fieldbackground=campo_fundo,
+            background=campo_fundo,
+            foreground=campo_texto,
+            font=self._fonte(10),
+            padding=5,
+        )
+        estilo.configure(
+            "Pomodoro.TCheckbutton",
+            background=self.CORES["surface"],
+            foreground=self.CORES["text"],
+            font=self._fonte(10),
+            padding=(2, 5),
+        )
+        estilo.map(
+            "Pomodoro.TCheckbutton",
+            background=[("active", self.CORES["surface"])],
+            foreground=[("disabled", self.CORES["muted"])],
+        )
         # Eu apresento os valores atuais para que o usuario possa ajusta-los facilmente.
         tk.Label(
             janela_configuracoes,
@@ -591,30 +638,35 @@ class PomodoroApp:
             font=self._fonte(11, "bold"),
         ).pack(anchor="w", padx=30, pady=(20, 6))
         selecao_som = tk.StringVar(value=self.som_alarme)
+        controles_som = tk.Frame(janela_configuracoes, bg=self.CORES["surface"])
+        controles_som.pack(fill="x", padx=30)
         seletor_som = ttk.Combobox(
-            janela_configuracoes,
+            controles_som,
             textvariable=selecao_som,
             values=tuple(self.arquivos_audio) or ("Nenhum MP3 encontrado",),
             state="readonly" if self.arquivos_audio else "disabled",
+            style="Pomodoro.TCombobox",
         )
-        seletor_som.pack(fill="x", padx=30)
+        seletor_som.pack(side="left", fill="x", expand=True)
         tk.Button(
-            janela_configuracoes,
+            controles_som,
             text="OUVIR SOM",
             command=lambda: self._tocar_som_alarme(
                 selecao_som.get(), volume.get() / 100
             ),
             state="normal" if self.arquivos_audio else "disabled",
-            bg=self.CORES["surface"],
-            fg=self.CORES["text"],
-            activebackground=self.CORES["surface_alt"],
+            bg=cor_fundo_acao,
+            fg=cor_texto_acao,
+            activebackground=cor_ativa_acao,
+            activeforeground=cor_texto_acao,
             font=self._fonte(9, "bold"),
-            relief="solid",
-            bd=1,
+            relief="flat",
+            bd=0,
+            highlightthickness=0,
             padx=12,
-            pady=6,
+            pady=7,
             cursor="hand2",
-        ).pack(anchor="w", padx=30, pady=(8, 0))
+        ).pack(side="right", padx=(8, 0))
         
         for modo, rotulo in rotulos_modos.items():
             # Eu crio um campo numerico para cada modo e preencho seu valor atual.
@@ -631,14 +683,14 @@ class PomodoroApp:
             ).pack(side="left")
             valor = tk.StringVar(value=str(self.duracoes[modo]))
             valores_campos[modo] = valor
-            tk.Spinbox(
+            ttk.Spinbox(
                 linha,
                 from_=1,
                 to=180,
                 textvariable=valor,
                 width=6,
                 justify="center",
-                font=self._fonte(10),
+                style="Pomodoro.TSpinbox",
             ).pack(side="right")
 
         linha_intervalo = tk.Frame(janela_configuracoes, bg=self.CORES["surface"])
@@ -651,39 +703,29 @@ class PomodoroApp:
             font=self._fonte(10),
         ).pack(side="left")
         intervalo = tk.StringVar(value=str(self.intervalo_pausa_longa))
-        tk.Spinbox(
+        ttk.Spinbox(
             linha_intervalo,
             from_=2,
             to=12,
             textvariable=intervalo,
             width=6,
             justify="center",
-            font=self._fonte(10),
+            style="Pomodoro.TSpinbox",
         ).pack(side="right")
 
         auto_pausas = tk.BooleanVar(value=self.iniciar_pausas_automaticamente)
-        tk.Checkbutton(
+        ttk.Checkbutton(
             janela_configuracoes,
             text="Iniciar pausas automaticamente",
             variable=auto_pausas,
-            bg=self.CORES["surface"],
-            fg=self.CORES["text"],
-            activebackground=self.CORES["surface"],
-            activeforeground=self.CORES["text"],
-            selectcolor=self.CORES["surface_alt"],
-            font=self._fonte(10),
+            style="Pomodoro.TCheckbutton",
         ).pack(anchor="w", padx=26, pady=2)
         auto_focos = tk.BooleanVar(value=self.iniciar_focos_automaticamente)
-        tk.Checkbutton(
+        ttk.Checkbutton(
             janela_configuracoes,
             text="Iniciar Pomodoros automaticamente",
             variable=auto_focos,
-            bg=self.CORES["surface"],
-            fg=self.CORES["text"],
-            activebackground=self.CORES["surface"],
-            activeforeground=self.CORES["text"],
-            selectcolor=self.CORES["surface_alt"],
-            font=self._fonte(10),
+            style="Pomodoro.TCheckbutton",
         ).pack(anchor="w", padx=26, pady=2)
 
         tk.Label(
@@ -699,6 +741,7 @@ class PomodoroApp:
             textvariable=selecao_tema,
             values=tuple(self.TEMAS),
             state="readonly",
+            style="Pomodoro.TCombobox",
         ).pack(fill="x", padx=30)
 
         tk.Label(
@@ -709,21 +752,44 @@ class PomodoroApp:
             font=self._fonte(11, "bold"),
         ).pack(anchor="w", padx=30, pady=(12, 2))
         volume = tk.IntVar(value=self.volume_som)
-        tk.Scale(
+        rotulo_volume = tk.Label(
             janela_configuracoes,
+            text=f"{volume.get()}%",
+            width=5,
+            anchor="e",
+            bg=self.CORES["surface"],
+            fg=self.CORES["muted"],
+            font=self._fonte(10, "bold"),
+        )
+
+        def atualizar_volume(valor):
+            percentual = int(round(float(valor)))
+            rotulo_volume.config(text=f"{percentual}%")
+            self._ajustar_volume_alarme(percentual)
+
+        linha_volume = tk.Frame(janela_configuracoes, bg=self.CORES["surface"])
+        linha_volume.pack(fill="x", padx=26)
+        tk.Scale(
+            linha_volume,
             variable=volume,
-            command=self._ajustar_volume_alarme,
+            command=atualizar_volume,
             from_=0,
             to=100,
             resolution=5,
             orient="horizontal",
-            showvalue=True,
+            showvalue=False,
             bg=self.CORES["surface"],
-            fg=self.CORES["text"],
+            fg=self.CORES["muted"],
             troughcolor=self.CORES["surface_alt"],
+            relief="flat",
+            bd=1,
+            sliderrelief="raised",
+            sliderlength=24,
+            width=15,
             highlightthickness=0,
             activebackground=self.CORES["accent"],
-        ).pack(fill="x", padx=26)
+        ).pack(side="left", fill="x", expand=True)
+        rotulo_volume.pack(in_=linha_volume, side="right", padx=(10, 0))
 
         # Eu salvo os novos valores somente depois de validar todos os campos.
         def salvar_configuracoes():
@@ -766,14 +832,15 @@ class PomodoroApp:
             text="SALVAR",
             command=salvar_configuracoes,
             bg=self.CORES["accent"],
-            fg="white",
+            fg=self.CORES["accent_text"],
             activebackground=self.CORES["accent_dark"],
-            activeforeground="white",
+            activeforeground=self.CORES["accent_text"],
             font=self._fonte(10, "bold"),
             relief="flat",
             bd=0,
-            padx=26,
-            pady=10,
+            highlightthickness=0,
+            padx=18,
+            pady=9,
             cursor="hand2",
         ).pack(pady=(24, 20))
 
